@@ -1,5 +1,4 @@
 import { glob } from 'glob'
-import { merge } from 'lodash-es'
 import { minimatch } from 'minimatch'
 import { relative } from 'path'
 import { Project, SourceFile } from 'ts-morph'
@@ -29,8 +28,16 @@ export class DuplicateDetector {
    * @param options 检测器配置选项
    */
   constructor(options: DetectorOptions = {}) {
-    // 使用 lodash merge 进行深度合并配置
-    this.options = merge({}, DEFAULT_DETECTOR_OPTIONS, options) as Required<DetectorOptions>
+    // 直接覆盖合并配置
+    this.options = {
+      ...DEFAULT_DETECTOR_OPTIONS,
+      ...options,
+      // rules 需要单独处理，保留默认值
+      rules: {
+        ...DEFAULT_DETECTOR_OPTIONS.rules,
+        ...options.rules,
+      },
+    } as Required<DetectorOptions>
 
     this.project = new Project({
       tsConfigFilePath: this.options.tsConfigPath,
@@ -83,34 +90,47 @@ export class DuplicateDetector {
    * 根据包含和排除模式过滤文件
    */
   private getFilteredSourceFiles(): SourceFile[] {
-    return this.project.getSourceFiles().filter((file) => {
-      const filePath = file.getFilePath()
-      // 检查是否匹配包含模式
+    const allFiles = this.project.getSourceFiles()
+    const filtered = allFiles.filter((file) => {
+      const absolutePath = file.getFilePath()
+      const relativePath = relative(process.cwd(), absolutePath)
+
+      // 检查是否匹配包含模式（同时尝试相对路径和绝对路径）
       const matchesInclude = this.options.includePatterns.some(pattern =>
-        this.matchesGlob(filePath, pattern),
+        this.matchesGlob(relativePath, pattern) || this.matchesGlob(absolutePath, pattern),
       )
 
-      if (!matchesInclude) return false
+      if (!matchesInclude) {
+        Logger.debug(`文件 "${relativePath}" 不匹配 includePatterns，已排除`)
+        return false
+      }
 
-      // 检查是否匹配排除模式
+      // 检查是否匹配排除模式（同时尝试相对路径和绝对路径）
       const matchesExclude = this.options.excludePatterns.some(pattern =>
-        this.matchesGlob(filePath, pattern),
+        this.matchesGlob(relativePath, pattern) || this.matchesGlob(absolutePath, pattern),
       )
+
+      if (matchesExclude) {
+        Logger.debug(`文件 "${relativePath}" 匹配 excludePatterns，已排除`)
+      }
 
       return !matchesExclude
     })
+
+    Logger.info(`过滤后剩余 ${filtered.length} 个文件`)
+    return filtered
   }
 
   /**
    * Glob 模式匹配
-   * @param filePath 文件路径
+   * @param filePath 文件路径（相对路径）
    * @param pattern glob 模式
    * @returns 是否匹配
    */
   private matchesGlob(filePath: string, pattern: string): boolean {
     return minimatch(filePath, pattern, {
       dot: true, // 匹配 .开头的文件
-      matchBase: true, // 支持基础名称匹配
+      matchBase: false, // 禁用基础名称匹配，确保路径精确匹配
     })
   }
 

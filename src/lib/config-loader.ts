@@ -1,6 +1,5 @@
 import fs from 'fs/promises'
-import createJiti from 'jiti'
-import { merge } from 'lodash-es'
+import { createJiti } from 'jiti'
 import path from 'path'
 import { DEFAULT_CONFIG_FILE, DEFAULT_DETECTOR_OPTIONS } from '@/const'
 import { Logger } from './logger'
@@ -16,10 +15,12 @@ export class ConfigLoader {
     try {
       await fs.access(configPath)
 
+      Logger.info(`读取配置文件: ${configPath}`)
       const config = await this.loadConfigFile(configPath)
       return this.mergeConfig(config)
     }
-    catch {
+    catch (error) {
+      Logger.info(`配置文件加载失败: ${error instanceof Error ? error.message : String(error)}`)
       Logger.info('使用默认配置')
       // 配置文件不存在或加载失败，返回默认配置
       return DEFAULT_DETECTOR_OPTIONS
@@ -42,7 +43,17 @@ export class ConfigLoader {
   }
 
   private static mergeConfig(userConfig: any): DetectorOptions {
-    // 使用 lodash merge 进行深度合并
-    return merge({}, DEFAULT_DETECTOR_OPTIONS, userConfig) as DetectorOptions
+    // 直接覆盖合并，用户配置优先
+    const merged = {
+      ...DEFAULT_DETECTOR_OPTIONS,
+      ...userConfig,
+      // rules 需要单独处理，保留默认值
+      rules: {
+        ...DEFAULT_DETECTOR_OPTIONS.rules,
+        ...userConfig.rules,
+      },
+    } as DetectorOptions
+
+    return merged
   }
 }

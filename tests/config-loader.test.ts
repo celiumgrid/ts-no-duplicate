@@ -44,11 +44,13 @@ describe('ConfigLoader', () => {
 
     // 用户配置应该覆盖默认值
     expect(config.includeInternal).toBe(true)
-    expect(config.excludePatterns).toContain('**/*.custom.ts')
+    // excludePatterns 被用户配置完全覆盖
+    expect(config.excludePatterns).toEqual(['**/*.custom.ts'])
 
-    // 默认值应该保留
+    // 未配置的字段应该使用默认值
     expect(config.tsConfigPath).toBe('./tsconfig.json')
-    expect(config.includePatterns).toContain('**/*.ts')
+    // includePatterns 未配置，使用默认值
+    expect(config.includePatterns).toEqual(['**/*.ts', '**/*.tsx'])
   })
 
   it('应该处理无效的配置文件', async () => {
