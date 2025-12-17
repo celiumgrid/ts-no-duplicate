@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.0.2 (2025-12-17)
+
 ## 0.0.1 (2025-12-17)
 
 ## [0.0.4](https://github.com/viteworks/ts-no-duplicate/compare/v0.0.3...v0.0.4) (2025-09-03)
