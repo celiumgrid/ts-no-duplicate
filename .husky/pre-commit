@@ -1,0 +1,9 @@
+# Run lint-staged for code formatting and linting
+pnpm dlx lint-staged
+
+# 检测tsc
+npx tsc --noEmit
+
+# Run tests with coverage check
+pnpm test:coverage
+
