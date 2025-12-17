@@ -24,15 +24,23 @@ jobs:
         id: check
         run: |
           commit_message=$(git log -1 --pretty=%B)
+          echo "Commit message: $commit_message"
 
-          if echo "$commit_message" | grep -q "^major:"; then
+          # Support both formats:
+          # 1. Simple: major: / minor: / patch:
+          # 2. Conventional Commits: major(scope): / minor(scope): / patch(scope):
+          if echo "$commit_message" | grep -qE "^major(\(.+\))?:"; then
             echo "type=major" >> $GITHUB_OUTPUT
-          elif echo "$commit_message" | grep -q "^minor:"; then
+            echo "✓ Detected major release"
+          elif echo "$commit_message" | grep -qE "^minor(\(.+\))?:"; then
             echo "type=minor" >> $GITHUB_OUTPUT
-          elif echo "$commit_message" | grep -q "^patch:"; then
+            echo "✓ Detected minor release"
+          elif echo "$commit_message" | grep -qE "^patch(\(.+\))?:"; then
             echo "type=patch" >> $GITHUB_OUTPUT
+            echo "✓ Detected patch release"
           else
             echo "type=none" >> $GITHUB_OUTPUT
+            echo "ℹ No release trigger found"
           fi
 
   release:
