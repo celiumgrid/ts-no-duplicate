@@ -1,61 +1,63 @@
 # TypeScript Duplicate Detector
 
-🔍 一个强大的 TypeScript 跨文件重复命名检测工具，帮助你维护代码库的命名一致性。
+[中文文档](./README.zh-CN.md)
 
-## ✨ 特性
+🔍 A powerful TypeScript cross-file duplicate name detection tool that helps you maintain naming consistency in your codebase.
 
-- 🚀 **快速检测** - 基于 TypeScript AST 的高效扫描
-- 🎯 **多类型支持** - 检测函数、类、接口、类型、变量、枚举、命名空间
-- 🔧 **灵活配置** - 支持多种过滤和规则配置
-- � **s 多种输出** - 控制台、JSON、Markdown 格式
-- 🎨 **美观展示** - 彩色输出，清晰的层级结构
-- ⚙️ **规则引擎** - 智能处理函数重载、跨模块重复等场景
+## ✨ Features
 
-## 📦 安装
+- 🚀 **Fast Detection** - Efficient scanning based on TypeScript AST
+- 🎯 **Multiple Type Support** - Detects functions, classes, interfaces, types, variables, enums, and namespaces
+- 🔧 **Flexible Configuration** - Supports various filtering and rule configurations
+- 📊 **Multiple Output Formats** - Console, JSON, and Markdown formats
+- 🎨 **Beautiful Display** - Colorful output with clear hierarchical structure
+- ⚙️ **Rule Engine** - Intelligently handles function overloads, cross-module duplicates, and more
+
+## 📦 Installation
 
 ```bash
-# 全局安装
-pnpm install -g @celiumgrid/ts-no-duplicate
+# Global installation
+pnpm install -g @myceliumgrid/ts-no-duplicate
 
-# 项目内安装
-pnpm install --save-dev @celiumgrid/ts-no-duplicate
+# Project installation
+pnpm install --save-dev @myceliumgrid/ts-no-duplicate
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
 ```bash
-# 基本使用
+# Basic usage
 tsnd
 
-# 指定配置文件
+# Specify config file
 tsnd --config ts-no-duplicate.ts
 
-# 输出为 JSON 格式
+# Output as JSON format
 tsnd --format json
 
-# 保存报告到文件
+# Save report to file
 tsnd --format markdown --output report.md
 ```
 
-## ⚙️ 配置
+## ⚙️ Configuration
 
-### 配置文件
+### Configuration File
 
-在项目根目录创建 `ts-no-duplicate.ts`：
+Create `ts-no-duplicate.ts` in your project root:
 
 ```bash
-# 使用 init 脚本自动创建配置文件
+# Auto-create config file using init command
 tsnd init
-# 或使用完整命令
+# Or use full command
 ts-no-duplicate init
-# 或使用 npx
-npx @celiumgrid/ts-no-duplicate init
+# Or use npx
+npx @myceliumgrid/ts-no-duplicate init
 ```
 
-配置文件示例：
+Configuration example:
 
 ```typescript
-import type { DetectorOptions } from "@celiumgrid/ts-no-duplicate";
+import type { DetectorOptions } from "@myceliumgrid/ts-no-duplicate";
 
 const config: DetectorOptions = {
   tsConfigPath: "./tsconfig.json",
@@ -80,131 +82,131 @@ const config: DetectorOptions = {
 export default config;
 ```
 
-### 配置选项说明
+### Configuration Options
 
-#### 基础配置
+#### Basic Configuration
 
-| 选项              | 类型     | 默认值                    | 说明                       |
-| ----------------- | -------- | ------------------------- | -------------------------- |
-| `tsConfigPath`    | string   | `"./tsconfig.json"`       | TypeScript 配置文件路径    |
-| `includeInternal` | boolean  | `false`                   | 是否包含内部（非导出）声明 |
-| `excludePatterns` | string[] | `["**/*.test.ts", ...]`   | 排除的文件模式             |
-| `includePatterns` | string[] | `["**/*.ts", "**/*.tsx"]` | 包含的文件模式             |
+| Option            | Type     | Default                   | Description                                             |
+| ----------------- | -------- | ------------------------- | ------------------------------------------------------- |
+| `tsConfigPath`    | string   | `"./tsconfig.json"`       | Path to TypeScript configuration file                   |
+| `includeInternal` | boolean  | `false`                   | Whether to include internal (non-exported) declarations |
+| `excludePatterns` | string[] | `["**/*.test.ts", ...]`   | File patterns to exclude                                |
+| `includePatterns` | string[] | `["**/*.ts", "**/*.tsx"]` | File patterns to include                                |
 
-#### 关于 `tsConfigPath` 的重要说明
+#### Important Note about `tsConfigPath`
 
-`tsConfigPath` 配置项用于指定 TypeScript 配置文件的路径，但需要注意：
+The `tsConfigPath` option specifies the path to your TypeScript configuration file, but note:
 
-**✅ 它的作用：**
+**✅ What it does:**
 
-- 提供 TypeScript 编译选项（如 `paths`、`baseUrl`、`strict` 等）
-- 确保工具能正确解析路径别名（如 `@/lib/xxx` → `src/lib/xxx`）
-- 提供类型检查和模块解析配置
+- Provides TypeScript compiler options (like `paths`, `baseUrl`, `strict`, etc.)
+- Ensures the tool can correctly resolve path aliases (e.g., `@/lib/xxx` → `src/lib/xxx`)
+- Provides type checking and module resolution configuration
 
-**❌ 它不控制：**
+**❌ What it doesn't control:**
 
-- 文件扫描范围（不使用 tsconfig.json 的 `include` 和 `exclude`）
-- 检测哪些文件（由 `includePatterns` 和 `excludePatterns` 控制）
+- File scanning scope (doesn't use tsconfig.json's `include` and `exclude`)
+- Which files to detect (controlled by `includePatterns` and `excludePatterns`)
 
-**为什么这样设计？**
+**Why this design?**
 
-这种设计允许检测工具的配置独立于项目的 TypeScript 配置：
+This design allows the detection tool's configuration to be independent of your project's TypeScript configuration:
 
-- 项目的 tsconfig.json 定义编译范围（可能包含测试文件、脚本等）
-- 检测工具的配置定义检测范围（通常只检测源代码）
-- 两者互不干扰，更加灵活
+- Your project's tsconfig.json defines compilation scope (may include test files, scripts, etc.)
+- The detection tool's configuration defines detection scope (usually only source code)
+- They don't interfere with each other, providing more flexibility
 
-**示例：**
+**Example:**
 
 ```typescript
-// tsconfig.json - 项目编译配置
+// tsconfig.json - Project compilation config
 {
-  "include": ["src", "tests", "scripts"],  // 编译所有这些目录
+  "include": ["src", "tests", "scripts"],  // Compile all these directories
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }  // ← 检测工具会使用这个
+    "paths": { "@/*": ["src/*"] }  // ← Detection tool will use this
   }
 }
 
-// ts-no-duplicate.ts - 检测工具配置
+// ts-no-duplicate.ts - Detection tool config
 {
-  tsConfigPath: "./tsconfig.json",  // 读取编译选项
-  includePatterns: ["src/**/*.ts"],  // 但只检测 src 目录
-  excludePatterns: ["**/*.test.ts"]  // 排除测试文件
+  tsConfigPath: "./tsconfig.json",  // Read compiler options
+  includePatterns: ["src/**/*.ts"],  // But only detect src directory
+  excludePatterns: ["**/*.test.ts"]  // Exclude test files
 }
 ```
 
-#### 过滤配置
+#### Filter Configuration
 
-| 选项          | 类型     | 默认值 | 说明           |
-| ------------- | -------- | ------ | -------------- |
-| `ignoreTypes` | string[] | `[]`   | 忽略的声明类型 |
-| `ignoreNames` | string[] | `[]`   | 忽略的具体名称 |
+| Option        | Type     | Default | Description                 |
+| ------------- | -------- | ------- | --------------------------- |
+| `ignoreTypes` | string[] | `[]`    | Declaration types to ignore |
+| `ignoreNames` | string[] | `[]`    | Specific names to ignore    |
 
-**支持的声明类型：**
+**Supported Declaration Types:**
 
-- `function` - 函数
-- `class` - 类
-- `interface` - 接口
-- `type` - 类型别名
-- `variable` - 变量
-- `enum` - 枚举
-- `namespace` - 命名空间
+- `function` - Functions
+- `class` - Classes
+- `interface` - Interfaces
+- `type` - Type aliases
+- `variable` - Variables
+- `enum` - Enums
+- `namespace` - Namespaces
 
-#### 规则配置
+#### Rule Configuration
 
-| 选项                         | 类型    | 默认值  | 说明                                       |
-| ---------------------------- | ------- | ------- | ------------------------------------------ |
-| `allowSameFileOverloads`     | boolean | `true`  | 允许同文件内的函数重载                     |
-| `allowCrossModuleDuplicates` | boolean | `false` | 允许跨模块重复                             |
-| `maxDuplicatesPerName`       | number  | `2`     | 限制每个重复组显示的位置数量（0 表示不限） |
+| Option                       | Type    | Default | Description                                                             |
+| ---------------------------- | ------- | ------- | ----------------------------------------------------------------------- |
+| `allowSameFileOverloads`     | boolean | `true`  | Allow function overloads in the same file                               |
+| `allowCrossModuleDuplicates` | boolean | `false` | Allow duplicates across modules                                         |
+| `maxDuplicatesPerName`       | number  | `2`     | Limit the number of locations shown per duplicate group (0 = unlimited) |
 
-**关于 `maxDuplicatesPerName` 的说明：**
+**About `maxDuplicatesPerName`:**
 
-此选项用于限制报告中每个重复组显示的位置数量，而不是"允许的重复数量"。
+This option limits the number of locations displayed in the report for each duplicate group, not the "allowed number of duplicates".
 
-- 如果设置为 `2`，当有 5 个重复时，报告中只显示前 2 个位置
-- 设置为 `0` 或不设置表示显示所有重复位置
-- 这个选项主要用于控制报告的详细程度，避免输出过长
+- If set to `2`, when there are 5 duplicates, only the first 2 locations will be shown in the report
+- Setting to `0` or not setting means show all duplicate locations
+- This option is mainly used to control report verbosity and avoid overly long output
 
-## 🎯 命令行选项
+## 🎯 Command Line Options
 
 ```bash
 tsnd [options]
 
 Commands:
-  init                          创建默认配置文件
+  init                          Create default configuration file
 
 Options:
-  -c, --config <path>           配置文件路径
-  -f, --format <format>         输出格式 (console|json|markdown) (default: "console")
-  --output <file>               输出到文件
-  -h, --help                    显示帮助信息
-  -V, --version                 显示版本号
+  -c, --config <path>           Configuration file path
+  -f, --format <format>         Output format (console|json|markdown) (default: "console")
+  --output <file>               Output to file
+  -h, --help                    Display help information
+  -V, --version                 Display version number
 ```
 
-> 注意：所有检测相关的配置选项（如包含/排除模式、忽略类型等）只能通过配置文件设置，不再支持命令行参数。
+> Note: All detection-related configuration options (such as include/exclude patterns, ignore types, etc.) can only be set through the configuration file, not via command line arguments.
 
-## 📊 输出格式
+## 📊 Output Formats
 
-### 控制台输出
+### Console Output
 
 ```
-🔍 启动 TypeScript 重复命名检测...
+🔍 Starting TypeScript duplicate name detection...
 
-� 扫描 45 个文件...
+📁 Scanning 45 files...
 
-📊 检测报告
+📊 Detection Report
 
-摘要:
-  文件总数: 45
-  声明总数: 234
-  重复组数: 3
-  重复声明数: 8
+Summary:
+  Total Files: 45
+  Total Declarations: 234
+  Duplicate Groups: 3
+  Duplicate Declarations: 8
 
-❌ 发现 3 组重复命名:
+❌ Found 3 duplicate name groups:
 
-1. function "handleSubmit" (3 次重复)
+1. function "handleSubmit" (3 duplicates)
    ├─ src/components/Form.ts:15:2
    │    export function handleSubmit(data: FormData) {
    ├─ src/utils/form.ts:8:2
@@ -213,7 +215,7 @@ Options:
         const handleSubmit = (data: ContactForm) => {
 ```
 
-### JSON 输出
+### JSON Output
 
 ```json
 {
@@ -241,21 +243,21 @@ Options:
 }
 ```
 
-### Markdown 输出
+### Markdown Output
 
 ````markdown
-# TypeScript 重复命名检测报告
+# TypeScript Duplicate Name Detection Report
 
-## 摘要
+## Summary
 
-- 文件总数: 45
-- 声明总数: 234
-- 重复组数: 3
-- 重复声明数: 8
+- Total Files: 45
+- Total Declarations: 234
+- Duplicate Groups: 3
+- Duplicate Declarations: 8
 
-## 重复命名详情
+## Duplicate Name Details
 
-### 1. `function` "handleSubmit" (3 次重复)
+### 1. `function` "handleSubmit" (3 duplicates)
 
 - `src/components/Form.ts:15:2`
   ```typescript
@@ -263,40 +265,38 @@ Options:
   ```
 ````
 
-````
+## 🔧 Use Cases
 
-## 🔧 使用场景
+### 1. Code Refactoring
 
-### 1. 代码重构
-
-在大型项目重构时，创建配置文件来检测重复命名避免冲突：
+Create a configuration file to detect duplicate names and avoid conflicts during large project refactoring:
 
 ```typescript
 // ts-no-duplicate.ts
 export default {
   includePatterns: ["src/**/*.ts"],
-  excludePatterns: ["**/*.test.ts"]
-}
+  excludePatterns: ["**/*.test.ts"],
+};
 ```
 
-然后运行:
+Then run:
 
 ```bash
 tsnd --config ts-no-duplicate.ts
-````
+```
 
-### 2. 代码审查
+### 2. Code Review
 
-集成到 CI/CD 流程中：
+Integrate into CI/CD pipeline:
 
 ```bash
-# 如果发现重复命名，退出码为 1
+# Exit code will be 1 if duplicates are found
 tsnd --format json > duplicates.json
 ```
 
-### 3. 团队规范
+### 3. Team Standards
 
-配置团队统一的命名规范：
+Configure unified naming standards for your team:
 
 ```json
 {
@@ -308,9 +308,9 @@ tsnd --format json > duplicates.json
 }
 ```
 
-## 🎨 高级用法
+## 🎨 Advanced Usage
 
-### 自定义规则
+### Custom Rules
 
 ```json
 {
@@ -322,72 +322,71 @@ tsnd --format json > duplicates.json
 }
 ```
 
-### 特定类型检测
+### Specific Type Detection
 
-在配置文件中设置：
+Configure in your config file:
 
 ```typescript
 // ts-no-duplicate.ts
 export default {
-  // 只检测函数重复，忽略其他类型
+  // Only detect function duplicates, ignore other types
   ignoreTypes: ["class", "interface", "type", "variable", "enum", "namespace"],
 
-  // 忽略测试文件
+  // Ignore test files
   excludePatterns: ["**/*.test.ts", "**/*.spec.ts"],
 };
 ```
 
-### 生成报告
+### Generate Reports
 
 ```bash
-# 生成 Markdown 报告
+# Generate Markdown report
 tsnd --format markdown --output duplicate-report.md
 
-# 生成 JSON 数据用于后续处理
+# Generate JSON data for further processing
 tsnd --format json --output duplicates.json
 ```
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
-### 开发环境
+### Development Setup
 
 ```bash
-
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 开发模式
+# Development mode
 pnpm dev
 
-# 运行测试
+# Run tests
 pnpm test
 
-# 构建
+# Build
 pnpm build
 ```
 
-### 提交规范
+### Commit Convention
 
-使用 Conventional Commits 规范：
+Use Conventional Commits:
 
 ```bash
-# 使用交互式提交
+# Interactive commit
 pnpm commit
 
-# 版本发布
-git commit -m "patch: 修复某个bug"  # 补丁版本
-git commit -m "minor: 添加新功能"   # 次要版本
-git commit -m "major: 破坏性变更"   # 主要版本
+# Version release
+git commit -m "patch: fix some bug"    # Patch version
+git commit -m "minor: add new feature" # Minor version
+git commit -m "major: breaking change" # Major version
 ```
 
-## 📄 许可证
+## 📄 License
 
 MIT License
 
-## 🙏 致谢
+## 🙏 Acknowledgments
 
-- [ts-morph](https://github.com/dsherret/ts-morph) - TypeScript AST 操作
-- [commander](https://github.com/tj/commander.js) - 命令行工具
-- [chalk](https://github.com/chalk/chalk) - 终端颜色输出
+- [ts-morph](https://github.com/dsherret/ts-morph) - TypeScript AST manipulation
+- [commander](https://github.com/tj/commander.js) - Command-line tool
+- [chalk](https://github.com/chalk/chalk) - Terminal color output
